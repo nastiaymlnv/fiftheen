@@ -72,22 +72,19 @@ export default class Board extends Component {
 
     winGameChecker = (boardID, modifiedBoardEntity) => {
         let isWinner = true;
-        let lastCellIsEmpty = false;
 
-        if (modifiedBoardEntity['id16'].value === null) {
-            lastCellIsEmpty = true;
-        }
-
-        for (let i = 1; i < boardID.length - 1; i++) {
+        for (let i = 1; i < boardID.length; i++) {
+            if (modifiedBoardEntity[boardID[i - 1]].value === 14 && modifiedBoardEntity[boardID[i]].value === null) {
+                isWinner = true;
+                break;
+            }
             if (modifiedBoardEntity[boardID[i - 1]].value > modifiedBoardEntity[boardID[i]].value) {
                 isWinner = false;
                 break;
             }
         }
 
-        if (isWinner && lastCellIsEmpty) {
-            console.log('winner');
-        }
+        return isWinner;
     }
 
     onClickHandler = (id) => () => {
@@ -96,12 +93,12 @@ export default class Board extends Component {
         let swipeCellId = this.swipeCellId;
         let swipeCellVal = {};
 
-        this.winGameChecker(boardID, modifiedBoardEntity);
-
-        // if (this.pairCounter === 1) {
-        //     console.log("inside if");
-        //     this.winGameChecker(boardID, modifiedBoardEntity);
-        // }
+        if (swipeCellId && modifiedBoardEntity['id14'].value === 14) {
+            let isWinner = this.winGameChecker(boardID, modifiedBoardEntity);
+            if (isWinner) {
+                console.log('Congrats!');
+            }
+        }
 
         if (this.pairCounter === 2) {
             this.pairCounter = 0;
@@ -138,7 +135,9 @@ export default class Board extends Component {
                 }
             })
         }
+
         ++this.pairCounter;
+
     }
 
     render() {
