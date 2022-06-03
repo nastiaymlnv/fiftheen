@@ -49,6 +49,21 @@ export default class Board extends Component {
     pairCounter = 0;
     moveIsAllowed = false;
 
+    componentDidMount() {
+        const boardID = [...this.state.boardID];
+        const shuffledBoardID = [];
+
+        for(let i = boardID.length; i !== 0; i--) {
+            const index = Math.floor(Math.random() * i);
+            const newPosition = boardID.splice(index, 1);
+            shuffledBoardID.push(newPosition);
+        }
+
+        this.setState({
+            boardID: shuffledBoardID
+        })
+    }
+
     moveChecker = (boardID, modifiedBoardEntity, swipeCellId, id) => {
         if (swipeCellId) {
             for (let index = 0; index < boardID.length; index++) {
