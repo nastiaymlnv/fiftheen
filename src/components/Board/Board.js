@@ -20,7 +20,7 @@ export default class Board extends Component {
             id13: {id: 'id13', value: 13},
             id14: {id: 'id14', value: 14},
             id15: {id: 'id15', value: 15},
-            id16: {id: 'id16', value: ''}
+            id16: {id: 'id16', value: null}
         },
         boardID: ['id1', 'id2', 'id3', 'id4',
                 'id5', 'id6', 'id7', 'id8',
@@ -56,7 +56,7 @@ export default class Board extends Component {
         for(let i = boardID.length; i !== 0; i--) {
             const index = Math.floor(Math.random() * i);
             const newPosition = boardID.splice(index, 1);
-            shuffledBoardID.push(newPosition);
+            shuffledBoardID.push(newPosition[0]);
         }
 
         this.setState({
@@ -64,7 +64,13 @@ export default class Board extends Component {
         })
     }
 
-    moveChecker = (boardID, modifiedBoardEntity, swipeCellId, id) => {
+    componentDidUpdate() {
+        const {boardID, modifiedBoardEntity} = this.state;
+
+        this.winGameChecker(boardID, modifiedBoardEntity);
+    }
+
+    moveChecker = (boardID, modifiedBoardEntity, swipeCellId, id, swipeCellVal) => {
         if (swipeCellId) {
             for (let index = 0; index < boardID.length; index++) {
                 if (((boardID[index] === id && boardID[index + 1] === swipeCellId) ||
@@ -80,6 +86,7 @@ export default class Board extends Component {
                         break;
                 } else {
                     this.moveIsAllowed = false;
+                    swipeCellVal = {};
                 }
             }
         }
@@ -87,19 +94,22 @@ export default class Board extends Component {
 
     winGameChecker = (boardID, modifiedBoardEntity) => {
         let isWinner = true;
+        let isLastCellEmpty = false;
 
-        for (let i = 1; i < boardID.length; i++) {
-            if (modifiedBoardEntity[boardID[i - 1]].value === 14 && modifiedBoardEntity[boardID[i]].value === null) {
-                isWinner = true;
-                break;
-            }
+        for (let i = 1; i < boardID.length - 1; i++) {
             if (modifiedBoardEntity[boardID[i - 1]].value > modifiedBoardEntity[boardID[i]].value) {
                 isWinner = false;
                 break;
             }
         }
 
-        return isWinner;
+        if (modifiedBoardEntity[boardID[boardID.length - 1]].value === null) {
+            isLastCellEmpty = true;
+        }
+
+        if (isWinner && isLastCellEmpty) {
+            console.log('Congrats! You won the game');
+        }
     }
 
     onClickHandler = (id) => () => {
@@ -107,13 +117,6 @@ export default class Board extends Component {
 
         let swipeCellId = this.swipeCellId;
         let swipeCellVal = {};
-
-        if (swipeCellId && modifiedBoardEntity['id14'].value === 14) {
-            let isWinner = this.winGameChecker(boardID, modifiedBoardEntity);
-            if (isWinner) {
-                console.log('Congrats!');
-            }
-        }
 
         if (this.pairCounter === 2) {
             this.pairCounter = 0;
@@ -133,7 +136,7 @@ export default class Board extends Component {
             }
         }
 
-        this.moveChecker(boardID, modifiedBoardEntity, swipeCellId, id);
+        this.moveChecker(boardID, modifiedBoardEntity, swipeCellId, id, swipeCellVal);
 
         if (this.moveIsAllowed) {
             this.setState({
