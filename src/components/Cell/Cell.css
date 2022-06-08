@@ -1,0 +1,10 @@
+.cell {
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    text-align: center;
+    font-size: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: default;
+}
